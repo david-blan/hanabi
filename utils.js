@@ -27,7 +27,10 @@ class Deck {
     }
 
     shuffle() {
-        // Should mix this.cards[]
+        this.cards = this.cards
+            .map(value => ({ value, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ value }) => value)
     }
 
     drawCard() {
@@ -44,6 +47,7 @@ class Player {
         this.name = username
         this.cards = []
         this.id = id
+        this.disconnected = false
     }
 
     getId = () => this.id
@@ -152,6 +156,14 @@ class Game {
         this.numPlayers++
     }
 
+    removePlayer(username) {
+        const index = this.players.findIndex(player => player.name === username)
+        if (index !== -1) {
+            this.players.splice(index, 1)
+            this.numPlayers--
+        }
+    }
+
     initialize() {
         this.running = true
 
@@ -186,8 +198,10 @@ class Game {
     }
 
     useHint() {
-        this.hints--
-        this.nextPlayer()
+        if (this.hints > 0) {
+            this.hints--
+            this.nextPlayer()
+        }
     }
 
     addHints(quantity) {
@@ -199,6 +213,9 @@ class Game {
 
     nextPlayer() {
         this.currentPlayer = (this.currentPlayer + 1) % this.numPlayers
+        if (this.players[this.currentPlayer].cards.length <= 0 && this.isFinished() == 0) {
+            this.nextPlayer()
+        }
     }
 
     placeCard(cardId) {
@@ -225,4 +242,4 @@ class Game {
     }
 }
 
-module.exports = { Game }
+module.exports = { Game, NUMBERS }
