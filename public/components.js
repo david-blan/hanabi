@@ -242,19 +242,29 @@ const TableComponent = {
   props: ['gameInfo'],
   data: function() {
     return {
-
+      glowStyle: {'-webkit-box-shadow': '0px 0px 3px 5px #f2e1f2', '-moz-box-shadow': '0px 0px 3px 5px #f2e1f2', 'box-shadow': '0px 0px 3px 5px #f2e1f2', 'border-radius': '8px'}
     }
   },
   template: `
+    <div style="display: flex; gap: 10px; position: absolute; top: 15px; right: 15px">
+      <h3 class="tableTitle">MAZO: {{gameInfo.cardsRemaining}}</h3>
+      <img src="./media/card_reverse.png" height="50">
+    </div>
     <div style="max-height:350px">
       <div style="display:flex; justify-content:center; gap:0 50px; margin-top:15px">
         <div style="display: flex; gap: 10px">
-          <h3 class="tableTitle" style="margin:0">VIDAS:</h3>
-          <div><img src="./media/heart.png" v-for="life in gameInfo.lifes" height="50" style="margin-right: 5px"></div>
+          <h3 class="tableTitle">VIDAS:</h3>
+          <div>
+            <img src="./media/heart.png" v-for="life in gameInfo.lifes" height="50" style="margin-right: 5px">
+            <img src="./media/empty_heart.png" v-for="empty_life in (3-gameInfo.lifes)" height="50" style="margin-right: 5px">
+          </div>
         </div>
         <div style="display: flex; gap: 10px">
-          <h3 class="tableTitle" style="margin:0">PISTAS:</h3>
-          <div><img src="./media/hint.png" v-for="life in gameInfo.hints" height="50" style="margin-right: 5px"></div>
+          <h3 class="tableTitle">PISTAS:</h3>
+          <div>
+            <img src="./media/hint.png" v-for="life in gameInfo.hints" height="50" style="margin-right: 5px">
+            <img src="./media/empty_hint.png" v-for="empty_hint in (8-gameInfo.hints)" height="50" style="margin-right: 5px">
+          </div>
         </div>
       </div>
 
@@ -266,7 +276,7 @@ const TableComponent = {
           <div style="display:flex; justify-content:center; gap:7px; height: 350px; max-height:350px">
             <div v-for="color in Object.keys(gameInfo.table.placed)">
               <div class="tableCard" v-for="(card, index) in gameInfo.table.placed[color]" :style="{'bottom':index==0 ? '0px' : ((index)*123)+'px'}">
-                <img :src="'./media/'+card.number+'_'+card.color+'.png'" height="150">
+                <img :src="'./media/'+card.number+'_'+card.color+'.png'" height="150" :style="card.id==gameInfo.table.lastMoved ? glowStyle:''">
               </div>
             </div>
           </div>
@@ -277,7 +287,7 @@ const TableComponent = {
           <div style="display:flex; justify-content:center; gap:7px; height: 350px; max-height:350px">
             <div v-for="color in Object.keys(gameInfo.table.discards)">
               <div class="tableCard" v-for="(card, index) in gameInfo.table.discards[color]" :style="{'bottom':index==0 ? '0px' : ((index)*123)+'px'}">
-                <img :src="'./media/'+card.number+'_'+card.color+'.png'" height="150">
+                <img :src="'./media/'+card.number+'_'+card.color+'.png'" height="150" :style="card.id==gameInfo.table.lastMoved ? glowStyle:''">
               </div>
             </div>
           </div>

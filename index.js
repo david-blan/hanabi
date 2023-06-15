@@ -28,7 +28,8 @@ const generateGameInfo = (game) => {
 
     let tableObj = {
         placed: {},
-        discards: {}
+        discards: {},
+        lastMoved: game.table.lastCardMoved,
     }
 
     for (let color of Object.keys(game.table.cards)) {
@@ -53,7 +54,8 @@ const generateGameInfo = (game) => {
         table: tableObj,
         hints: game.hints,
         lifes: game.lifes,
-        turn: (game.isRunning() ? game.getCurrentPlayerId() : -1)
+        turn: (game.isRunning() ? game.getCurrentPlayerId() : -1),
+        cardsRemaining: game.deck.cards.length
     }
 }
 

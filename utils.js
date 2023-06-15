@@ -3,9 +3,10 @@ const CARDS_PER_NUMBER = [3, 2, 2, 2, 1]
 const COLORS = ['blue', 'yellow', 'red', 'green', 'white']
 
 class Card {
-    constructor(number, color) {
+    constructor(number, color, id) {
         this.number = number
         this.color = color
+        this.id = id
     }
 
     getNumber = () => this.number
@@ -18,7 +19,7 @@ class Deck {
         for (let color of COLORS) {
             for (let number of NUMBERS) {
                 for (let quantity = 0; quantity < CARDS_PER_NUMBER[number-1]; quantity++) {
-                    this.cards.push(new Card(number, color))
+                    this.cards.push(new Card(number, color, this.cards.length))
                 }
             }
         }
@@ -82,6 +83,13 @@ class Table {
                 this.discards[color][number] = []
             }
         }
+        
+        this.lastCardMoved = null
+    }
+
+    // Removes the lastMoved from the previous card and sets it for the new one
+    setLastCardMoved(card) {
+        this.lastCardMoved = card.id
     }
 
     // Returns the state of the game -> 1:WIN ; 0:NOTHING ; -1:LOSE
@@ -101,14 +109,16 @@ class Table {
         return result
     }
 
-    // Tries to place a card, if not possible return false and adds it to discards[]
+    // Tries to place a card: 0: OK, -1: FAIL, 1: OK AND COLOR COMPLETE
     placeCard(card) {
         if (card.getNumber() == 1 && this.cards[card.getColor()].length == 0) {
+            this.setLastCardMoved(card)
             this.cards[card.getColor()].push(card)
             return 0
         } else if (this.cards[card.getColor()].length == 0) {
             return -1
         } else if (this.cards[card.getColor()].slice(-1)[0].getNumber() == card.getNumber()-1) {
+            this.setLastCardMoved(card)
             this.cards[card.getColor()].push(card)
             return card.getNumber() == 5 ? 1 : 0
         } else {
@@ -117,6 +127,7 @@ class Table {
     }
 
     addDiscard(card) {
+        this.setLastCardMoved(card)
         this.discards[card.getColor()][card.getNumber()].push(card)
     }
 }
